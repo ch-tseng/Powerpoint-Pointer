@@ -16,7 +16,7 @@ serial = serial.Serial(comPort, baudRate)
 i = 0
 nowtime = 0
 lastClicktime = 0
-
+switchClick = False  #是否切換為scroll的方式
 
 while True:
 	
@@ -26,16 +26,33 @@ while True:
 	while(serial.inWaiting()):
 		out += str(serial.read(1).decode('UTF-8'))
 	
+	
 	if out != '':
 		print(out)
+		
 		if(out=="D"):
-			pyautogui.typewrite(["right", "ctrlright"]) 
+
+			if(switchClick==False):
+				pyautogui.typewrite(["right", "ctrlright"]) 
+			else:
+				pyautogui.scroll(250)
 			
 		if(out=="U"):
-			pyautogui.typewrite(["left", "ctrlleft"])
+
+			if(switchClick==False):
+				pyautogui.typewrite(["left", "ctrlleft"])
+			else:
+				pyautogui.scroll(-250)
 			
 		if(out=="N"):
-			file = "notice" + str(random.randrange(1, 6)) + ".wav"
-			playsound.playsound(file, True)
+			
+			if(switchClick==True):
+				file = "click.wav"
+				playsound.playsound(file, True)
+				switchClick = False
+			else:
+				file = "scroll.wav"
+				playsound.playsound(file, True)			
+				switchClick = True
 
 		serial.flushInput()
